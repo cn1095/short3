@@ -3090,7 +3090,9 @@ func main() {
 	// 启动HTTP服务器
 	go func() {
     	if err := http.Serve(ln, nil); err != nil {
-        	log.Fatalf("服务器错误: %v", err)
+        	if !errors.Is(err, net.ErrClosed) {
+            	log.Printf("服务器错误: %v", err)
+        	}
     	}
 	}()
   
