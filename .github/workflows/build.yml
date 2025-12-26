@@ -108,6 +108,8 @@ jobs:
           go-version: ${{ env.gotag }}
       - name: 开始编译
         run: |
+            go install golang.org/x/tools/cmd/goimports@latest
+            goimports -w .
             sudo timedatectl set-timezone "Asia/Shanghai"
             export CGO_ENABLED=0
             export GOOS=$GOos
@@ -148,4 +150,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: shortener-${{ matrix.NAME }}
-          path: /opt/shortener-${{ matrix.NAME }}
+          path: |
+            /opt/shortener-${{ matrix.NAME }}
+            ./go.sum
+            ./go.mod
