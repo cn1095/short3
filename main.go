@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"compress/gzip"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -144,6 +145,15 @@ type Storage interface {
 // 本地文件存储实现
 type FileStorage struct {
 	dataDir string
+}
+
+type gzipResponseWriter struct {  
+    http.ResponseWriter  
+    writer *gzip.Writer  
+}  
+  
+func (w gzipResponseWriter) Write(b []byte) (int, error) {  
+    return w.writer.Write(b)  
 }
 
 func NewFileStorage(dataDir string) *FileStorage {
@@ -423,12 +433,12 @@ func (hs *HybridStorage) DeleteRule(code string) error {
 
 func (hs *HybridStorage) ListRules() ([]ApiRequest, error) {
 	if redisEnabled {
-		// Redis可用时，从Redis获取列表
-		rules, err := hs.redis.ListRules()
+		// 优先从从本地数据目录获取
+		rules, err := hs.file.ListRules()
 		if err != nil {
-			log.Printf("Redis列表获取失败: %v，回退到本地short_data文件存储", err)
-			// Redis失败时，回退到本地文件
-			return hs.file.ListRules()
+			log.Printf("本地文件列表获取失败: %v，回退到Redis", err)
+			// 本地文件失败时，回退到Redis
+			return hs.redis.ListRules()
 		}
 		return rules, nil
 	}
@@ -1614,7 +1624,13 @@ func adminHandler(w http.ResponseWriter, r *http.Request, dataDir string) {
 		http.Error(w, "错误：连续输错次数太多啦，请休息一会儿后再试吧！", http.StatusForbidden)
 		return
 	}
-
+	// 检查客户端是否支持gzip  
+    if strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {  
+        w.Header().Set("Content-Encoding", "gzip")  
+        gz := gzip.NewWriter(w)  
+        defer gz.Close()  
+        w = gzipResponseWriter{ResponseWriter: w, writer: gz}  
+    }
 	// 处理清理日志请求
 	if r.Method == http.MethodPost && r.FormValue("mode") == "del-log" {
 		if logDir != "" {
@@ -1785,7 +1801,7 @@ if r.Method == http.MethodPost && r.FormValue("mode") == "delete-expired" {
 		return
 	}
 
-	// 使用混合存储优先读取Redis数据
+	// 使用混合存储优先读取本地数据
 	allData, err := storage.ListRules()
 	if err != nil {
 		http.Error(w, fmt.Sprintf("无法读取规则数据：%v", err), http.StatusInternalServerError)
