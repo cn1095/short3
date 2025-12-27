@@ -2073,11 +2073,33 @@ func renderAdminPage(w http.ResponseWriter, r *http.Request, data []ApiRequest) 
     0% { transform: rotate(0deg); }  
     100% { transform: rotate(360deg); }  
 }
+.search-button-group {  
+    display: flex;  
+    gap: 15px;  
+    align-items: center;  
+    margin: 8px 0;  
+    flex-wrap: wrap;  
+}  
+  
+.search-input {  
+    width: 200px;  
+    padding: 8px 12px;  
+    border: 1px solid #ddd;  
+    border-radius: 6px;  
+    font-size: 14px;  
+    outline: none;  
+    transition: border-color 0.3s ease;  
+}  
+  
+.search-input:focus {  
+    border-color: #007bff;  
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);  
+}
 /* Vue样式按钮组 */  
 .button-group {  
 	display: flex;  
 	gap: 8px;  
-	margin: 1px 0;  
+	margin: 0;  
 	flex-wrap: wrap;  
 	align-items: center;  
 }  
@@ -2913,18 +2935,20 @@ window.onload = function() {
 	<body>
 		<h2>管理页面</h2>
 		<div class="container">
-			<input type="text" id="searchInput" onkeyup="searchTable()" placeholder="搜索关键词...">
-			<!-- 按钮组 -->  
-			<div class="button-group">  
-				<button class="vue-btn vue-btn-primary" onclick="toggleMultiSelect()">  
-					<span id="multiSelectText">多选</span>  
-				</button>  
-				<button class="vue-btn vue-btn-danger" onclick="deleteExpired()">删除过期</button>  
-				<div id="hiddenButtons" class="hidden-buttons">  
-					<!-- <button class="vue-btn vue-btn-success" onclick="selectAll()">全选</button> --> 
-					<!-- <button class="vue-btn vue-btn-warning" onclick="deselectAll()">取消全选</button> --> 
-					<button id="deleteSelectedBtn" class="vue-btn vue-btn-danger" onclick="deleteSelected()" disabled>删除选中</button>  
-				</div>  
+			<div class="search-button-group">  
+    			<input type="text" id="searchInput" onkeyup="searchTable()" placeholder="搜索关键词..." class="search-input">  
+    			<!-- 按钮组 -->    
+    			<div class="button-group">    
+        			<button class="vue-btn vue-btn-primary" onclick="toggleMultiSelect()">    
+            			<span id="multiSelectText">多选</span>    
+        			</button>    
+        			<button class="vue-btn vue-btn-danger" onclick="deleteExpired()">删除过期</button>    
+        			<div id="hiddenButtons" class="hidden-buttons">    
+						<!-- <button class="vue-btn vue-btn-success" onclick="selectAll()">全选</button> --> 
+						<!-- <button class="vue-btn vue-btn-warning" onclick="deselectAll()">取消全选</button> --> 
+            			<button id="deleteSelectedBtn" class="vue-btn vue-btn-danger" onclick="deleteSelected()" disabled>删除选中</button>    
+        			</div>    
+    			</div>  
 			</div>
 			<table id="dataTable">
 				<thead>
