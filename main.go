@@ -2083,7 +2083,7 @@ func renderAdminPage(w http.ResponseWriter, r *http.Request, data []ApiRequest) 
   
 .search-input {    
     width: 100% !important;  /* 占用剩余所有空间 */  
-    max-width: 500px !important;  /* 设置最大宽度限制 */  
+    max-width: 900px !important;  /* 设置最大宽度限制 */  
     min-width: 200px !important;  /* 设置最小宽度 */  
     padding: 8px 12px;    
     border: 1px solid #ddd;    
@@ -2276,6 +2276,33 @@ td:first-child {
     display: flex;    
     align-items: center;    
     justify-content: center;    
+}
+.back-to-top-btn {  
+    position: fixed;  
+    bottom: 30px;  
+    right: 30px;  
+    width: 50px;  
+    height: 50px;  
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);  
+    color: white;  
+    border: none;  
+    border-radius: 50%;  
+    cursor: pointer;  
+    display: none;  
+    align-items: center;  
+    justify-content: center;  
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);  
+    transition: all 0.3s ease;  
+    z-index: 1000;  
+}  
+  
+.back-to-top-btn:hover {  
+    transform: translateY(-3px);  
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);  
+}  
+  
+.back-to-top-btn.show {  
+    display: flex;  
 }
 		</style>
 		<script>
@@ -2929,6 +2956,28 @@ window.onload = function() {
 		selectAllCheckbox.style.display = "none";  
 	}  
 };
+// 滚动监听和回到顶部功能  
+window.addEventListener('scroll', function() {  
+    var table = document.getElementById('dataTable');  
+    var backToTopBtn = document.getElementById('backToTop');  
+      
+    if (table) {  
+        var tableRect = table.getBoundingClientRect();  
+        // 当表头顶部超出视窗时显示按钮  
+        if (tableRect.top < 0) {  
+            backToTopBtn.classList.add('show');  
+        } else {  
+            backToTopBtn.classList.remove('show');  
+        }  
+    }  
+});  
+  
+function scrollToTop() {  
+    window.scrollTo({  
+        top: 0,  
+        behavior: 'smooth'  
+    });  
+}
 		</script>
 	</head>
 	<body>
@@ -3044,6 +3093,12 @@ window.onload = function() {
 		</div>  
 	</div>  
 </div>
+<!-- 悬浮回到顶部按钮 -->  
+<button id="backToTop" class="back-to-top-btn" onclick="scrollToTop()">  
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">  
+        <path d="M18 15l-6-6-6 6"/>  
+    </svg>  
+</button>
 	<!-- 加载弹窗 -->  
 <div id="loadingPopup" class="loading-popup">  
     <div class="loading-content">  
