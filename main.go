@@ -2438,6 +2438,11 @@ td:first-child {
             			updateDeleteButton();  
         			}  
     			}, 100);
+				// 重置全选复选框状态  
+    			var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
+    			if (selectAllCheckbox) {  
+        			selectAllCheckbox.checked = false;  
+    			}
 			}
 
 			function isTextTruncated(element) {  
@@ -2819,40 +2824,40 @@ function toggleMultiSelect() {
   
 // 全选当前页  
 function selectAll() {  
-	var checkboxes = document.querySelectorAll(".row-checkbox");  
-	var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
-	checkboxes.forEach(function(checkbox) {  
-		if (checkbox.style.display !== "none") {  
-			checkbox.checked = true;  
-		}  
-	});  
-	selectAllCheckbox.checked = true;  
-	updateDeleteButton();  
+    var checkboxes = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none']) .row-checkbox");  
+    var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
+    checkboxes.forEach(function(checkbox) {  
+        if (checkbox.style.display !== "none") {  
+            checkbox.checked = true;  
+        }  
+    });  
+    selectAllCheckbox.checked = true;  
+    updateDeleteButton();  
 }  
   
-// 取消全选  
+// 取消全选当前页  
 function deselectAll() {  
-	var checkboxes = document.querySelectorAll(".row-checkbox");  
-	var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
-	checkboxes.forEach(function(checkbox) {  
-		checkbox.checked = false;  
-	});  
-	selectAllCheckbox.checked = false;  
-	updateDeleteButton();  
-}  
+    var checkboxes = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none']) .row-checkbox");  
+    var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
+    checkboxes.forEach(function(checkbox) {  
+        checkbox.checked = false;  
+    });  
+    selectAllCheckbox.checked = false;  
+    updateDeleteButton();  
+}
   
-// 切换全选状态  
+// 切换全选状态（当前页）  
 function toggleSelectAll() {  
-	var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
-	var checkboxes = document.querySelectorAll(".row-checkbox");  
-	  
-	checkboxes.forEach(function(checkbox) {  
-		if (checkbox.style.display !== "none") {  
-			checkbox.checked = selectAllCheckbox.checked;  
-		}  
-	});  
-	updateDeleteButton();  
-}  
+    var selectAllCheckbox = document.getElementById("selectAllCheckbox");  
+    var checkboxes = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none']) .row-checkbox");  
+      
+    checkboxes.forEach(function(checkbox) {  
+        if (checkbox.style.display !== "none") {  
+            checkbox.checked = selectAllCheckbox.checked;  
+        }  
+    });  
+    updateDeleteButton();  
+}
   
 // 更新删除选中按钮状态  
 function updateDeleteButton() {  
