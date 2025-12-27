@@ -2349,19 +2349,31 @@ td:nth-child(2) {
 			}  
   
 			function toggleLongUrl(cell) {  
-    			if (cell.classList.contains('expanded')) {  
-        			cell.classList.remove('expanded');  
-        			cell.title = '点击展开完整内容';  
-    			} else {  
-        			cell.classList.add('expanded');  
-        			cell.title = '点击收起内容';  
-    			}  
-			}  
+    if (cell.classList.contains('expanded')) {  
+        cell.classList.remove('expanded');  
+        cell.classList.add('truncated');  
+        cell.title = '点击展开完整内容';  
+        cell.style.whiteSpace = 'nowrap';  
+        cell.style.overflow = 'hidden';  
+        cell.style.textOverflow = 'ellipsis';  
+    } else {  
+        cell.classList.remove('truncated');  
+        cell.classList.add('expanded');  
+        cell.title = '点击收起内容';  
+        cell.style.whiteSpace = 'normal';  
+        cell.style.overflow = 'visible';  
+        cell.style.textOverflow = 'clip';  
+    }  
+} 
   
 			function initLongUrlToggle() {  
     var longUrlCells = document.querySelectorAll('td:nth-child(2)');  
+      
     longUrlCells.forEach(function(cell) {  
-        // 强制重新布局以确保准确的尺寸计算  
+        // 移除所有旧的事件监听器  
+        cell.removeEventListener('click', cell._clickHandler);  
+          
+        // 强制设置CSS样式  
         cell.style.overflow = 'hidden';  
         cell.style.textOverflow = 'ellipsis';  
         cell.style.whiteSpace = 'nowrap';  
@@ -2371,16 +2383,24 @@ td:nth-child(2) {
             if (isTextTruncated(cell)) {  
                 cell.classList.add('truncated');  
                 cell.title = '点击展开完整内容';  
-                // 确保点击事件不被覆盖  
-                cell.onclick = function(e) {  
+                cell.style.cursor = 'pointer';  
+                  
+                // 创建新的点击处理器并保存引用  
+                cell._clickHandler = function(e) {  
                     e.preventDefault();  
+                    e.stopPropagation();  
                     toggleLongUrl(this);  
                 };  
+                  
+                // 使用addEventListener而不是onclick  
+                cell.addEventListener('click', cell._clickHandler);  
+                  
             } else {  
                 cell.classList.remove('truncated', 'expanded');  
                 cell.title = '';  
-                cell.onclick = null; 
-				cell.style.cursor = 'default';
+                cell.style.cursor = 'default';  
+                cell.removeEventListener('click', cell._clickHandler);  
+                cell._clickHandler = null;  
             }  
         }, 100);  
     });  
