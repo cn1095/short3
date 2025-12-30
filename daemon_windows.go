@@ -8,7 +8,7 @@ import (
     "os/exec"
 ) 
 
-func runAsDaemonWindows() {
+func runAsDaemon() {
     cmd := exec.Command(os.Args[0], os.Args[1:]...)
     cmd.Env = os.Environ()
     err := cmd.Start()
